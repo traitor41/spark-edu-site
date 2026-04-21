@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小蚂蚁 - Transportasi</title>
+    <!-- Tailwind CSS untuk Styling (Otomatis Responsif di HP) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React dan ReactDOM dari CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel untuk menerjemahkan kode React (JSX) di dalam browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- ICON SVG COMPONENTS ---
+        const Mic = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>;
+        const Volume2 = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>;
+        const ArrowRight = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>;
+        const CheckCircle2 = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
+        const XCircle = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>;
+        const RefreshCw = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+        const Trophy = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7c0 3.31 2.69 6 6 6s6-2.69 6-6V2Z"/></svg>;
+        const AlertTriangle = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>;
+        const BookOpen = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+        const Headphones = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>;
+        const MessageCircle = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>;
+        const HomeIcon = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+        const Languages = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>;
+        const Eye = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>;
+
+        // --- UTILITY FUNCTION FOR RANDOMIZING ---
+        function shuffleArray(array) {
+            let shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // --- DATA DEFINITIONS (20 Soal per Bagian) ---
+        const part1Source = [
+            { zh: "堵车非常严重吗？", options: ["Jalanan sangat macet, pak.", "Macet parah banget?", "Jalan lancar hari ini.", "Ada banjir jalan di depan."], answer: 1 },
+            { zh: "司机，走高速。", options: ["Pak, masuk gate tol.", "Pak, bayar tol pakai kartu.", "Pak, lewat tol saja.", "Pak, lewat jalan pintas saja."], answer: 2 },
+            { zh: "前面路上淹水。", options: ["Ada banjir jalan di depan.", "Ada pom bensin di depan.", "Ada razia polisi di depan.", "Berhenti di depan pintu masuk."], answer: 0 },
+            { zh: "我们走捷径。", options: ["Kita lurus terus saja.", "Kita putar balik di sini.", "Kita sudah terlambat satu jam.", "Kita lewat jalan pintas saja."], answer: 3 },
+            { zh: "先生，请加满油。", options: ["Bensin sudah mau habis.", "Pak, tolong isi bensin penuh.", "Ada pom bensin di depan.", "Pak, tolong matikan mesin."], answer: 1 },
+            { zh: "玻璃脏，灯也不亮。", options: ["Kaca kotor dan AC mati juga.", "Ban kempes dan lampu mati juga.", "Kaca kotor dan lampu mati juga.", "Kaca bersih dan lampu mati juga."], answer: 2 },
+            { zh: "空调开冷点。", options: ["AC dingin sekarang?", "Tolong matikan mesin mobil.", "Tolong nyalakan AC lebih dingin.", "Tolong matikan musiknya."], answer: 2 },
+            { zh: "警察罚款多少钱？", options: ["Tilang denda mahal.", "Berapa denda tilang polisi?", "Bayar tunai atau transfer, pak?", "Berapa saldo kartu tol saya?"], answer: 1 },
+            { zh: "余额没了，我没钱。", options: ["Saldo habis, saya tidak ada uang.", "Saldo kartu masih cukup.", "Bayar tunai saja.", "Bisa bayar nanti."], answer: 0 },
+            { zh: "直走，然后右转。", options: ["Lurus terus, lalu belok kanan.", "Lurus saja sampai lampu merah.", "Belok kanan atau kiri di depan?", "Jalan lurus terus, jangan belok."], answer: 0 },
+            { zh: "路上很堵，先生。", options: ["Jalanan sangat macet, pak.", "Jalan lancar hari ini.", "Tidak ada macet parah.", "Hati-hati bawa mobil."], answer: 0 },
+            { zh: "我们晚了一小时。", options: ["Kita masuk gate tol.", "Kita sudah sampai.", "Kita sudah terlambat satu jam.", "Kapan kita sampai?"], answer: 2 },
+            { zh: "轮胎没气了？", options: ["Ban kempes?", "Mesin panas sekali?", "Rem pakem tidak?", "Ban depan bocor?"], answer: 0 },
+            { zh: "请现在叫网约车。", options: ["Tunggu bentar saya buka aplikasi.", "Tolong panggil taksi online sekarang.", "Lokasi Grab di mana?", "HP macet aplikasi lambat."], answer: 1 },
+            { zh: "先生，别开车窗。", options: ["Pak, tolong matikan musiknya.", "Pak, jendela kaca jangan dibuka.", "Pak, pintu masuk di depan.", "Pak, tolong pelan saja."], answer: 1 },
+            { zh: "今天有很多警察的突击检查。", options: ["Ada razia polisi di depan.", "Hari ini banyak razia polisi.", "Kita kena tilang polisi.", "Hati-hati pakai helm motor."], answer: 1 },
+            { zh: "早上八点接我。", options: ["Besok jam tujuh sudah standby.", "Jemput saya jam delapan pagi.", "Tolong jemput istri saya.", "Tunggu saya sepuluh menit lagi."], answer: 1 },
+            { zh: "我的高速卡余额是多少？", options: ["Bayar tol pakai kartu?", "Saldo kartu masih cukup.", "Berapa saldo kartu tol saya?", "Saldo habis saya tidak ada uang."], answer: 2 },
+            { zh: "哪里有大停车场？", options: ["Di sini tidak bisa parkir.", "Parkir mobil di gedung belakang.", "Di mana parkiran luas?", "Belakang mobil itu?"], answer: 2 },
+            { zh: "去中心的距离很远吗？", options: ["Jarak ke pusat jauh sekali?", "Tidak dekat banget.", "Berapa menit lagi sampai?", "Sudah sampai lokasi pak."], answer: 0 }
+        ];
+
+        const part2Source = [
+            { prefix: "Antar saya ke ", answer: "bandara", hint: "机场", suffix: " sekarang.", fullText: "Antar saya ke bandara sekarang." },
+            { prefix: "Tolong ", answer: "matikan", hint: "熄火", suffix: " mesin mobil.", fullText: "Tolong matikan mesin mobil." },
+            { prefix: "Hari ini banyak ", answer: "razia", hint: "突击检查", suffix: " polisi.", fullText: "Hari ini banyak razia polisi." },
+            { prefix: "Pak, tolong ", answer: "isi", hint: "加满", suffix: " bensin penuh.", fullText: "Pak, tolong isi bensin penuh." },
+            { prefix: "Tolong nyalakan AC lebih ", answer: "dingin", hint: "冷", suffix: ".", fullText: "Tolong nyalakan AC lebih dingin." },
+            { prefix: "Berapa ", answer: "denda", hint: "罚款", suffix: " tilang polisi?", fullText: "Berapa denda tilang polisi?" },
+            { prefix: "", answer: "Saldo", hint: "余额", suffix: " kartu masih cukup.", fullText: "Saldo kartu masih cukup." },
+            { prefix: "Tolong bantu angkat ", answer: "koper", hint: "行李箱", suffix: ".", fullText: "Tolong bantu angkat koper." },
+            { prefix: "HP macet, ", answer: "aplikasi", hint: "软件", suffix: " Grab lambat.", fullText: "HP macet, aplikasi Grab lambat." },
+            { prefix: "Jarak ke pusat ", answer: "jauh", hint: "远", suffix: " sekali?", fullText: "Jarak ke pusat jauh sekali?" },
+            { prefix: "Pak, lewat ", answer: "tol", hint: "高速", suffix: " saja.", fullText: "Pak, lewat tol saja." },
+            { prefix: "Jalanan sangat ", answer: "macet", hint: "堵", suffix: ", pak.", fullText: "Jalanan sangat macet, pak." },
+            { prefix: "Kita lewat jalan ", answer: "pintas", hint: "捷径", suffix: " saja.", fullText: "Kita lewat jalan pintas saja." },
+            { prefix: "Ban ", answer: "kempes", hint: "没气", suffix: "?", fullText: "Ban kempes?" },
+            { prefix: "Kaca ", answer: "kotor", hint: "脏", suffix: " dan lampu mati juga.", fullText: "Kaca kotor dan lampu mati juga." },
+            { prefix: "Tolong ", answer: "pelan", hint: "慢", suffix: " saja bawa mobilnya.", fullText: "Tolong pelan saja bawa mobilnya." },
+            { prefix: "Mobil ini sangat ", answer: "bersih", hint: "干净", suffix: " sekali.", fullText: "Mobil ini sangat bersih sekali." },
+            { prefix: "Jemput saya jam ", answer: "delapan", hint: "八", suffix: " pagi.", fullText: "Jemput saya jam delapan pagi." },
+            { prefix: "Di mana ", answer: "parkiran", hint: "停车场", suffix: " luas?", fullText: "Di mana parkiran luas?" },
+            { prefix: "Jalan ", answer: "lurus", hint: "直走", suffix: " terus saja.", fullText: "Jalan lurus terus saja." }
+        ];
+
+        const part3Source = [
+            { text: "Pak, lewat tol saja.", zh: "司机，走高速。" },
+            { text: "Jalanan sangat macet, pak.", zh: "路上很堵，先生。" },
+            { text: "Macet parah banget?", zh: "堵车非常严重吗？" },
+            { text: "Kita lewat jalan pintas saja.", zh: "我们走捷径。" },
+            { text: "Lurus saja sampai lampu merah.", zh: "直走到红绿灯。" },
+            { text: "Antar saya ke bandara sekarang.", zh: "现在送我去机场。" },
+            { text: "Pak, tolong isi bensin penuh.", zh: "先生，请加满油。" },
+            { text: "Tolong matikan mesin mobil.", zh: "请熄火。" },
+            { text: "Kaca kotor dan lampu mati juga.", zh: "玻璃脏，灯也不亮。" },
+            { text: "Rem masih pakem, pak.", zh: "刹车还灵，先生。" },
+            { text: "Tolong nyalakan AC lebih dingin.", zh: "空调开冷点。" },
+            { text: "Pak, jendela kaca jangan dibuka.", zh: "先生，别开车窗。" },
+            { text: "Tolong pelan saja bawa mobilnya.", zh: "请慢点开汽车。" },
+            { text: "Hari ini banyak razia polisi.", zh: "今天有很多警察的突击检查。" },
+            { text: "Berapa denda tilang polisi?", zh: "警察罚款多少钱？" },
+            { text: "Jemput saya jam delapan pagi.", zh: "早上八点接我。" },
+            { text: "Ya, saya bayar tol pakai kartu.", zh: "是的，我刷卡交高速费。" },
+            { text: "Di mana parkiran luas?", zh: "哪里有大停车场？" },
+            { text: "Tolong bantu angkat koper.", zh: "请帮忙拿行李。" },
+            { text: "Jarak ke pusat jauh sekali?", zh: "去中心的距离很远吗？" }
+        ];
+
+        const part4Source = [
+            { zh: "租", answer: "Sewa" },
+            { zh: "加油", answer: "Isi bensin" },
+            { zh: "一直", answer: "Terus" },
+            { zh: "严重", answer: "Parah" },
+            { zh: "安全带", answer: "Sabuk pengaman" },
+            { zh: "头盔", answer: "Helm" },
+            { zh: "罚款", answer: "Denda" },
+            { zh: "余额", answer: "Saldo" },
+            { zh: "漏气", answer: "Bocor" },
+            { zh: "飞机场", answer: "Bandara" },
+            { zh: "路上很堵，先生。", answer: "Jalanan sangat macet pak" },
+            { zh: "请加满油。", answer: "Tolong isi bensin penuh" },
+            { zh: "刹车还灵，先生。", answer: "Rem masih pakem pak" },
+            { zh: "空调开冷点。", answer: "Tolong nyalakan AC lebih dingin" },
+            { zh: "警察罚款多少钱？", answer: "Berapa denda tilang polisi" },
+            { zh: "早上八点接我。", answer: "Jemput saya jam delapan pagi" },
+            { zh: "请帮忙拿行李。", answer: "Tolong bantu angkat koper" },
+            { zh: "去中心的距离很远吗？", answer: "Jarak ke pusat jauh sekali" },
+            { zh: "请熄火。", answer: "Tolong matikan mesin mobil" },
+            { zh: "直走，然后右转。", answer: "Lurus terus lalu belok kanan" }
+        ];
+
+        // --- SHARED COMPONENTS ---
+        function AppHeader() {
+            return (
+                <div className="w-full bg-white shadow-sm px-6 py-4 flex items-center justify-start sticky top-0 z-50">
+                    <a href="https://ibb.co.com/nqSM17qy" target="_blank" rel="noreferrer">
+                        <img src="https://i.ibb.co.com/cKdh86K9/image-916b42-png.png" alt="Logo" className="h-10 md:h-12 object-contain" />
+                    </a>
+                    <div className="ml-4 flex flex-col">
+                        <h1 className="font-bold text-slate-800 text-lg md:text-xl leading-tight">小蚂蚁 - Transportasi</h1>
+                        <span className="text-xs text-slate-500 font-medium">印尼语练习</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function ResultScreen({ score, total, onRetry, onMenu }) {
+            return (
+                <div className="bg-white p-8 rounded-3xl shadow-xl max-w-md w-full text-center border-t-4 border-blue-500 mx-auto mt-8">
+                    <Trophy className="w-20 h-20 text-yellow-400 mx-auto mb-6" />
+                    <h2 className="text-3xl font-bold text-slate-800 mb-2">Selesai / 完成!</h2>
+                    <p className="text-slate-500 mb-6 font-medium">Latihan Selesai / 练习结束</p>
+                    
+                    <div className="bg-blue-50 rounded-xl p-6 mb-8">
+                        <p className="text-sm text-blue-600 font-bold mb-1">SKOR ANDA / 你的分数</p>
+                        <p className="text-5xl font-bold text-blue-700">{score} <span className="text-2xl text-blue-500">/ {total}</span></p>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                        <button onClick={onRetry} className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                            <RefreshCw className="w-5 h-5" /> Coba Lagi / 再试一次
+                        </button>
+                        <button onClick={onMenu} className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-6 rounded-xl transition-colors">
+                            <HomeIcon className="w-5 h-5" /> Kembali ke Menu / 返回主菜单
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function Header({ titleId, titleZh, current, total, onBack }) {
+            return (
+                <div className="flex items-center justify-between mb-8 px-2 w-full">
+                    <div className="flex items-center gap-4">
+                        <button onClick={onBack} className="p-2 bg-white rounded-full shadow hover:bg-slate-50 transition-colors text-slate-600">
+                            <HomeIcon className="w-5 h-5" />
+                        </button>
+                        <div>
+                            <h2 className="text-xl font-bold text-slate-900">{titleId}</h2>
+                            <p className="text-slate-500 text-sm font-medium">{titleZh}</p>
+                        </div>
+                    </div>
+                    <div className="bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 font-bold text-blue-600">
+                        {current + 1} / {total}
+                    </div>
+                </div>
+            );
+        }
+
+        // --- PART 1: MULTIPLE CHOICE ---
+        function Part1({ data, goBack }) {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [selectedOption, setSelectedOption] = useState(null);
+            const [showAnswer, setShowAnswer] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+
+            const currentQ = data[currentIndex];
+
+            const handleSelect = (index) => {
+                if (selectedOption !== null || showAnswer) return;
+                setSelectedOption(index);
+                if (index === currentQ.answer) {
+                    setScore(prev => prev + 1);
+                }
+            };
+
+            const handleShowAnswer = () => {
+                setShowAnswer(true);
+            };
+
+            const handleNext = () => {
+                if (currentIndex < data.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    setSelectedOption(null);
+                    setShowAnswer(false);
+                } else {
+                    setIsFinished(true);
+                }
+            };
+
+            if (isFinished) return <ResultScreen score={score} total={data.length} onRetry={goBack} onMenu={goBack} />;
+
+            return (
+                <div className="max-w-xl mx-auto w-full flex flex-col items-center mt-6 px-4">
+                    <Header titleId="Bagian 1: Pilihan Ganda" titleZh="第一部分：选择题" current={currentIndex} total={data.length} onBack={goBack} />
+                    
+                    <div className="bg-white w-full rounded-3xl shadow-lg p-6 md:p-8 border border-slate-100">
+                        <div className="text-center mb-8">
+                            <span className="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase mb-4">Pilih Terjemahan / 选择翻译</span>
+                            <h2 className="text-2xl md:text-3xl font-bold text-slate-800">{currentQ.zh}</h2>
+                        </div>
+
+                        <div className="space-y-3">
+                            {currentQ.options.map((opt, idx) => {
+                                let btnClass = "w-full text-left p-4 rounded-xl border-2 font-medium transition-all ";
+                                
+                                if (showAnswer && idx === currentQ.answer) {
+                                    btnClass += "border-green-500 bg-green-50 text-green-700";
+                                } else if (selectedOption === null && !showAnswer) {
+                                    btnClass += "border-slate-200 hover:border-blue-400 hover:bg-blue-50 text-slate-700";
+                                } else if (idx === currentQ.answer && selectedOption !== null) {
+                                    btnClass += "border-green-500 bg-green-50 text-green-700";
+                                } else if (idx === selectedOption) {
+                                    btnClass += "border-red-500 bg-red-50 text-red-700";
+                                } else {
+                                    btnClass += "border-slate-100 bg-slate-50 text-slate-400 opacity-50";
+                                }
+
+                                return (
+                                    <button key={idx} onClick={() => handleSelect(idx)} className={btnClass} disabled={selectedOption !== null || showAnswer}>
+                                        <div className="flex items-center justify-between">
+                                            <span>{opt}</span>
+                                            {((selectedOption !== null && idx === currentQ.answer) || (showAnswer && idx === currentQ.answer)) && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+                                            {selectedOption === idx && idx !== currentQ.answer && <XCircle className="w-5 h-5 text-red-500" />}
+                                        </div>
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        <div className="mt-8 flex flex-col sm:flex-row justify-between gap-4">
+                            {(selectedOption === null && !showAnswer) ? (
+                                <button onClick={handleShowAnswer} className="flex-1 flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    <Eye className="w-5 h-5" /> Lihat Jawaban / 显示答案
+                                </button>
+                            ) : <div></div>}
+
+                            {(selectedOption !== null || showAnswer) && (
+                                <button onClick={handleNext} className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    {currentIndex === data.length - 1 ? 'Selesai / 完成' : 'Selanjutnya / 下一题'} <ArrowRight className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- PART 2: FILL IN THE BLANKS (VOICE) ---
+        function Part2({ data, goBack }) {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [status, setStatus] = useState('idle'); // idle, listening, correct, incorrect, revealed
+            const [transcript, setTranscript] = useState('');
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [browserSupported, setBrowserSupported] = useState(true);
+
+            const recognitionRef = useRef(null);
+            const currentQ = data[currentIndex];
+
+            useEffect(() => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    setBrowserSupported(false);
+                } else {
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'id-ID';
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onstart = () => { setStatus('listening'); setTranscript(''); };
+                    recognition.onresult = (event) => {
+                        const spokenWord = event.results[0][0].transcript;
+                        setTranscript(spokenWord);
+                        checkAnswer(spokenWord, currentQ.answer);
+                    };
+                    recognition.onerror = (event) => {
+                        if (event.error !== 'aborted') {
+                            setStatus('idle');
+                            setTranscript('Error: Coba lagi / 请重试.');
+                        }
+                    };
+                    recognition.onend = () => {
+                        if (status === 'listening') setStatus(prev => prev === 'listening' ? 'idle' : prev);
+                    };
+                    recognitionRef.current = recognition;
+                }
+            }, [currentIndex]);
+
+            const checkAnswer = (spoken, target) => {
+                const spokenLower = spoken.toLowerCase().replace(/[.,?!]/g, '').trim();
+                const targetLower = target.toLowerCase().trim();
+                
+                if (spokenLower.includes(targetLower)) {
+                    setStatus('correct');
+                    setScore(prev => prev + 1);
+                } else {
+                    setStatus('incorrect');
+                }
+            };
+
+            const handleListen = () => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(currentQ.fullText);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.85;
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
+            const handleSpeak = () => {
+                if (recognitionRef.current) {
+                    if (status === 'listening') {
+                        recognitionRef.current.stop();
+                        setStatus('idle');
+                    } else {
+                        try { recognitionRef.current.start(); } catch (e) { console.log(e); }
+                    }
+                }
+            };
+
+            const handleShowAnswer = () => {
+                setStatus('revealed');
+                if (recognitionRef.current && status === 'listening') {
+                    recognitionRef.current.stop();
+                }
+            };
+
+            const handleNext = () => {
+                if (currentIndex < data.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    setStatus('idle');
+                    setTranscript('');
+                } else {
+                    setIsFinished(true);
+                }
+            };
+
+            if (!browserSupported) return <BrowserWarning goBack={goBack} />;
+            if (isFinished) return <ResultScreen score={score} total={data.length} onRetry={goBack} onMenu={goBack} />;
+
+            const isDone = status === 'correct' || status === 'revealed';
+
+            return (
+                <div className="max-w-xl mx-auto w-full flex flex-col items-center mt-6 px-4">
+                    <Header titleId="Bagian 2: Isi Titik (Suara)" titleZh="第二部分：语音填空" current={currentIndex} total={data.length} onBack={goBack} />
+                    
+                    <div className="bg-white w-full rounded-3xl shadow-lg p-6 md:p-8 border border-slate-100">
+                        <div className="text-center mb-6">
+                            <span className="inline-block bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase mb-4">Sebutkan Kata yang Hilang / 读出缺失的词</span>
+                        </div>
+
+                        <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-xl md:text-2xl leading-loose font-medium text-slate-800 text-center mb-8">
+                            <p>
+                                {currentQ.prefix}
+                                <span className={`inline-block px-4 py-1 mx-1 border-b-4 font-bold rounded ${status === 'correct' ? 'border-green-500 text-green-600 bg-green-50' : status === 'revealed' ? 'border-blue-500 text-blue-600 bg-blue-50' : 'border-slate-400 text-slate-400 bg-white'}`}>
+                                    {isDone ? currentQ.answer : `[ ${currentQ.hint} ]`}
+                                </span>
+                                {currentQ.suffix}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                            <button onClick={handleListen} className="flex-1 flex flex-col items-center gap-2 bg-slate-100 hover:bg-slate-200 py-4 rounded-2xl transition-all">
+                                <Volume2 className="w-8 h-8 text-emerald-600" />
+                                <span className="font-bold text-sm">1. Dengarkan / 听</span>
+                            </button>
+                            
+                            <button onClick={handleSpeak} disabled={isDone} className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-2xl transition-all ${isDone ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : status === 'listening' ? 'bg-red-100 text-red-700' : 'bg-emerald-600 hover:bg-emerald-700 text-white'}`}>
+                                <Mic className={`w-8 h-8 ${status === 'listening' ? 'animate-pulse' : ''}`} />
+                                <span className="font-bold text-sm">{status === 'listening' ? 'Merekam... / 录音中...' : '2. Jawab (Bicara) / 说'}</span>
+                            </button>
+                        </div>
+
+                        <div className="min-h-[100px] flex flex-col justify-center items-center text-center">
+                            {status === 'idle' && !transcript && <p className="text-slate-400 text-sm">Klik <strong>Bicara</strong> dan sebutkan kata yang hilang di dalam kurung. / 点击说话并读出括号内的词汇。</p>}
+                            {transcript && status !== 'revealed' && (
+                                <div className="w-full">
+                                    <p className="text-sm text-slate-500 mb-1">Anda bilang / 你说:</p>
+                                    <p className="font-medium text-slate-700 italic mb-2">"{transcript}"</p>
+                                    {status === 'correct' && <div className="text-green-600 font-bold flex justify-center items-center gap-1"><CheckCircle2 className="w-5 h-5"/> Benar! / 正确！</div>}
+                                    {status === 'incorrect' && <div className="text-amber-600 font-bold flex justify-center items-center gap-1"><XCircle className="w-5 h-5"/> Salah, coba lagi / 错误，请重试</div>}
+                                </div>
+                            )}
+                            {status === 'revealed' && (
+                                <div className="text-blue-600 font-bold flex justify-center items-center gap-1">
+                                    Jawaban Ditampilkan / 答案已显示
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
+                             {!isDone ? (
+                                <button onClick={handleShowAnswer} className="flex-1 flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    <Eye className="w-5 h-5" /> Lihat Jawaban / 显示答案
+                                </button>
+                            ) : <div></div>}
+
+                            {isDone && (
+                                <button onClick={handleNext} className="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    {currentIndex === data.length - 1 ? 'Selesai / 完成' : 'Selanjutnya / 下一题'} <ArrowRight className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- PART 3: LISTEN & SPEAK ---
+        function Part3({ data, goBack }) {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [transcript, setTranscript] = useState('');
+            const [status, setStatus] = useState('idle'); // idle, listening, correct, incorrect, revealed
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [browserSupported, setBrowserSupported] = useState(true);
+
+            const recognitionRef = useRef(null);
+            const currentQ = data[currentIndex];
+
+            useEffect(() => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    setBrowserSupported(false);
+                } else {
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'id-ID';
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onstart = () => { setStatus('listening'); setTranscript(''); };
+                    recognition.onresult = (event) => {
+                        const spokenWord = event.results[0][0].transcript;
+                        setTranscript(spokenWord);
+                        checkAnswer(spokenWord, currentQ.text);
+                    };
+                    recognition.onerror = (event) => {
+                        if (event.error !== 'aborted') {
+                            setStatus('idle');
+                            setTranscript('Error: Tidak terdengar / 听不清楚.');
+                        }
+                    };
+                    recognition.onend = () => {
+                        if (status === 'listening') setStatus(prev => prev === 'listening' ? 'idle' : prev);
+                    };
+                    recognitionRef.current = recognition;
+                }
+            }, [currentIndex]);
+
+            const normalizeText = (text) => text.toLowerCase().replace(/[.,?!]/g, '').trim();
+
+            const checkAnswer = (spoken, target) => {
+                const normSpoken = normalizeText(spoken);
+                const normTarget = normalizeText(target);
+                const targetWords = normTarget.split(' ');
+                const spokenWords = normSpoken.split(' ');
+                
+                let matches = 0;
+                targetWords.forEach(word => { if (spokenWords.includes(word)) matches++; });
+                const accuracy = matches / targetWords.length;
+
+                if (accuracy >= 0.7) {
+                    setStatus('correct');
+                    setScore(prev => prev + 1);
+                } else {
+                    setStatus('incorrect');
+                }
+            };
+
+            const handleListen = () => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(currentQ.text);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.85;
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
+            const handleSpeak = () => {
+                if (recognitionRef.current) {
+                    if (status === 'listening') {
+                        recognitionRef.current.stop();
+                        setStatus('idle');
+                    } else {
+                        try { recognitionRef.current.start(); } catch (e) { console.log(e); }
+                    }
+                }
+            };
+
+            const handleShowAnswer = () => {
+                setStatus('revealed');
+                if (recognitionRef.current && status === 'listening') {
+                    recognitionRef.current.stop();
+                }
+            };
+
+            const handleNext = () => {
+                if (currentIndex < data.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    setTranscript('');
+                    setStatus('idle');
+                } else {
+                    setIsFinished(true);
+                }
+            };
+
+            if (!browserSupported) return <BrowserWarning goBack={goBack} />;
+            if (isFinished) return <ResultScreen score={score} total={data.length} onRetry={goBack} onMenu={goBack} />;
+
+            const isDone = status === 'correct' || status === 'revealed';
+
+            return (
+                <div className="max-w-xl mx-auto w-full flex flex-col items-center mt-6 px-4">
+                    <Header titleId="Bagian 3: Latihan Berbicara" titleZh="第三部分：口语练习" current={currentIndex} total={data.length} onBack={goBack} />
+                    
+                    <div className="bg-white w-full rounded-3xl shadow-lg p-6 md:p-8 border border-slate-100">
+                        <div className="text-center mb-8">
+                            <p className="text-slate-500 mb-2 font-medium">{currentQ.zh}</p>
+                            <h2 className={`text-2xl md:text-3xl font-bold ${isDone ? 'text-green-600' : 'text-slate-800'}`}>{currentQ.text}</h2>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                            <button onClick={handleListen} className="flex-1 flex flex-col items-center gap-2 bg-slate-100 hover:bg-slate-200 py-4 rounded-2xl transition-all">
+                                <Volume2 className="w-8 h-8 text-purple-600" />
+                                <span className="font-bold text-sm">1. Dengarkan / 听</span>
+                            </button>
+                            
+                            <button onClick={handleSpeak} disabled={isDone} className={`flex-1 flex flex-col items-center gap-2 py-4 rounded-2xl transition-all ${isDone ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : status === 'listening' ? 'bg-red-100 text-red-700' : 'bg-purple-600 hover:bg-purple-700 text-white'}`}>
+                                <Mic className={`w-8 h-8 ${status === 'listening' ? 'animate-pulse' : ''}`} />
+                                <span className="font-bold text-sm">{status === 'listening' ? 'Merekam... / 录音中...' : '2. Bicara / 说'}</span>
+                            </button>
+                        </div>
+
+                        <div className="min-h-[120px] rounded-2xl bg-slate-50 p-6 flex flex-col items-center justify-center border border-slate-100 text-center">
+                            {status === 'idle' && !transcript && <p className="text-slate-400 text-sm">Klik <strong>Bicara/说</strong> dan baca kalimatnya. Pastikan izinkan mikrofon. / 点击说话并朗读。</p>}
+                            {transcript && status !== 'revealed' && (
+                                <div className="w-full">
+                                    <p className="text-sm text-slate-500 mb-1">Anda bilang / 你说:</p>
+                                    <p className="font-medium text-slate-700 italic mb-4">"{transcript}"</p>
+                                    {status === 'correct' && <div className="text-green-600 font-bold flex justify-center items-center gap-1"><CheckCircle2 className="w-5 h-5"/> Bagus! / 非常好！</div>}
+                                    {status === 'incorrect' && <div className="text-amber-600 font-bold flex justify-center items-center gap-1"><XCircle className="w-5 h-5"/> Kurang tepat / 不太准确</div>}
+                                </div>
+                            )}
+                            {status === 'revealed' && (
+                                <div className="text-blue-600 font-bold flex justify-center items-center gap-1">
+                                    Dilewati / 已跳过
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
+                             {!isDone ? (
+                                <button onClick={handleShowAnswer} className="flex-1 flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    <Eye className="w-5 h-5" /> Lewati (Lihat Jawaban) / 跳过
+                                </button>
+                            ) : <div></div>}
+
+                            {isDone && (
+                                <button onClick={handleNext} className="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    {currentIndex === data.length - 1 ? 'Selesai / 完成' : 'Selanjutnya / 下一题'} <ArrowRight className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- PART 4: TRANSLATE & SPEAK ---
+        function Part4({ data, goBack }) {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [transcript, setTranscript] = useState('');
+            const [status, setStatus] = useState('idle'); // idle, listening, correct, incorrect, revealed
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [browserSupported, setBrowserSupported] = useState(true);
+
+            const recognitionRef = useRef(null);
+            const currentQ = data[currentIndex];
+
+            useEffect(() => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    setBrowserSupported(false);
+                } else {
+                    const recognition = new SpeechRecognition();
+                    recognition.lang = 'id-ID';
+                    recognition.interimResults = false;
+                    recognition.maxAlternatives = 1;
+
+                    recognition.onstart = () => { setStatus('listening'); setTranscript(''); };
+                    recognition.onresult = (event) => {
+                        const spokenWord = event.results[0][0].transcript;
+                        setTranscript(spokenWord);
+                        checkAnswer(spokenWord, currentQ.answer);
+                    };
+                    recognition.onerror = (event) => {
+                        if (event.error !== 'aborted') {
+                            setStatus('idle');
+                            setTranscript('Error: Tidak terdengar / 听不清楚.');
+                        }
+                    };
+                    recognition.onend = () => {
+                        if (status === 'listening') setStatus(prev => prev === 'listening' ? 'idle' : prev);
+                    };
+                    recognitionRef.current = recognition;
+                }
+            }, [currentIndex]);
+
+            const normalizeText = (text) => text.toLowerCase().replace(/[.,?!]/g, '').trim();
+
+            const checkAnswer = (spoken, target) => {
+                const normSpoken = normalizeText(spoken);
+                const normTarget = normalizeText(target);
+                const targetWords = normTarget.split(' ');
+                const spokenWords = normSpoken.split(' ');
+                
+                let matches = 0;
+                targetWords.forEach(word => { if (spokenWords.includes(word)) matches++; });
+                const accuracy = matches / targetWords.length;
+
+                // For single words, accuracy must be 100%. For sentences, 70% is enough.
+                if (accuracy >= 0.7) {
+                    setStatus('correct');
+                    setScore(prev => prev + 1);
+                } else {
+                    setStatus('incorrect');
+                }
+            };
+
+            const handleSpeak = () => {
+                if (recognitionRef.current) {
+                    if (status === 'listening') {
+                        recognitionRef.current.stop();
+                        setStatus('idle');
+                    } else {
+                        try { recognitionRef.current.start(); } catch (e) { console.log(e); }
+                    }
+                }
+            };
+
+            const handleShowAnswer = () => {
+                setStatus('revealed');
+                if (recognitionRef.current && status === 'listening') {
+                    recognitionRef.current.stop();
+                }
+                
+                // Play audio automatically when revealed so they can hear the correct pronunciation
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(currentQ.answer);
+                    utterance.lang = 'id-ID';
+                    utterance.rate = 0.85;
+                    window.speechSynthesis.speak(utterance);
+                }
+            };
+
+            const handleNext = () => {
+                if (currentIndex < data.length - 1) {
+                    setCurrentIndex(prev => prev + 1);
+                    setTranscript('');
+                    setStatus('idle');
+                } else {
+                    setIsFinished(true);
+                }
+            };
+
+            if (!browserSupported) return <BrowserWarning goBack={goBack} />;
+            if (isFinished) return <ResultScreen score={score} total={data.length} onRetry={goBack} onMenu={goBack} />;
+
+            const isDone = status === 'correct' || status === 'revealed';
+
+            return (
+                <div className="max-w-xl mx-auto w-full flex flex-col items-center mt-6 px-4">
+                    <Header titleId="Bagian 4: Terjemahkan" titleZh="第四部分：口语翻译" current={currentIndex} total={data.length} onBack={goBack} />
+                    
+                    <div className="bg-white w-full rounded-3xl shadow-lg p-6 md:p-8 border border-slate-100">
+                        <div className="text-center mb-8">
+                            <span className="inline-block bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold uppercase mb-4">Terjemahkan ke Bahasa Indonesia / 翻译成印尼语</span>
+                            <h2 className="text-3xl md:text-4xl font-bold text-slate-800 my-4">{currentQ.zh}</h2>
+                            
+                            {/* Tempat Jawaban Benar Muncul Jika Berhasil/Minta Jawaban */}
+                            <div className={`mt-6 text-xl font-bold transition-all ${isDone ? 'opacity-100' : 'opacity-0'} ${status === 'correct' ? 'text-green-600' : 'text-blue-600'}`}>
+                                {currentQ.answer}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center mb-8">
+                            <button onClick={handleSpeak} disabled={isDone} className={`w-full max-w-xs flex flex-col items-center gap-2 py-4 rounded-2xl transition-all ${isDone ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : status === 'listening' ? 'bg-red-100 text-red-700' : 'bg-orange-500 hover:bg-orange-600 text-white'}`}>
+                                <Mic className={`w-10 h-10 ${status === 'listening' ? 'animate-pulse' : ''}`} />
+                                <span className="font-bold text-lg">{status === 'listening' ? 'Merekam... / 录音中...' : 'Bicara / 说'}</span>
+                            </button>
+                        </div>
+
+                        <div className="min-h-[100px] rounded-2xl bg-slate-50 p-6 flex flex-col items-center justify-center border border-slate-100 text-center">
+                            {status === 'idle' && !transcript && <p className="text-slate-400 text-sm">Klik <strong>Bicara/说</strong> dan sebutkan terjemahannya dalam Bahasa Indonesia. / 点击说话并读出印尼语翻译。</p>}
+                            {transcript && status !== 'revealed' && (
+                                <div className="w-full">
+                                    <p className="text-sm text-slate-500 mb-1">Anda bilang / 你说:</p>
+                                    <p className="font-medium text-slate-700 italic mb-4">"{transcript}"</p>
+                                    {status === 'correct' && <div className="text-green-600 font-bold flex justify-center items-center gap-1"><CheckCircle2 className="w-5 h-5"/> Tepat Sekali! / 完全正确！</div>}
+                                    {status === 'incorrect' && <div className="text-amber-600 font-bold flex justify-center items-center gap-1"><XCircle className="w-5 h-5"/> Salah, coba lagi / 错误，请重试</div>}
+                                </div>
+                            )}
+                            {status === 'revealed' && (
+                                <div className="text-blue-600 font-bold flex justify-center items-center gap-1">
+                                    Jawaban Ditampilkan / 答案已显示
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="mt-6 flex flex-col sm:flex-row justify-between gap-4">
+                             {!isDone ? (
+                                <button onClick={handleShowAnswer} className="flex-1 flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    <Eye className="w-5 h-5" /> Lihat Jawaban / 显示答案
+                                </button>
+                            ) : <div></div>}
+
+                            {isDone && (
+                                <button onClick={handleNext} className="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 px-6 rounded-xl transition-colors">
+                                    {currentIndex === data.length - 1 ? 'Selesai / 完成' : 'Selanjutnya / 下一题'} <ArrowRight className="w-5 h-5" />
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- WARNING COMPONENT ---
+        function BrowserWarning({ goBack }) {
+            return (
+                <div className="bg-white w-full max-w-md mx-auto mt-20 p-8 rounded-2xl shadow-xl text-center border-t-4 border-red-500">
+                    <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h2 className="text-xl font-bold mb-2">Browser Tidak Mendukung / 浏览器不支持</h2>
+                    <p className="text-slate-600 mb-6 text-sm">Gunakan Google Chrome (Android/PC) atau Safari (iOS) versi terbaru dan berikan izin Mikrofon. / 请使用最新版的 Chrome 或 Safari 浏览器，并允许麦克风权限。</p>
+                    <button onClick={goBack} className="w-full bg-slate-100 hover:bg-slate-200 text-slate-800 py-3 rounded-xl font-bold">Kembali / 返回</button>
+                </div>
+            );
+        }
+
+        // --- MAIN MENU ---
+        function App() {
+            const [view, setView] = useState('menu');
+            const [activeData, setActiveData] = useState([]);
+
+            const startPart = (partNum, sourceData) => {
+                // Acak urutan soal sebelum mulai (Randomize on every play)
+                const randomizedData = shuffleArray(sourceData);
+                setActiveData(randomizedData);
+                setView(`part${partNum}`);
+            };
+
+            const goBackToMenu = () => {
+                setView('menu');
+                setActiveData([]);
+            };
+
+            return (
+                <div className="min-h-screen bg-slate-50 pb-10">
+                    <AppHeader />
+                    
+                    {view === 'menu' && (
+                        <div className="max-w-md mx-auto w-full mt-10 px-4">
+                            <div className="text-center mb-10">
+                                <h1 className="text-3xl font-bold text-slate-900 mb-2">Pilih Latihan</h1>
+                                <h2 className="text-xl font-medium text-slate-500">请选择练习项目</h2>
+                            </div>
+
+                            <div className="space-y-4">
+                                <button onClick={() => startPart(1, part1Source)} className="w-full flex items-center gap-4 bg-white hover:bg-blue-50 p-5 rounded-2xl shadow-sm border border-slate-100 transition-all active:scale-95 group">
+                                    <div className="bg-blue-100 p-3 rounded-xl group-hover:bg-blue-600 transition-colors">
+                                        <BookOpen className="w-6 h-6 text-blue-600 group-hover:text-white" />
+                                    </div>
+                                    <div className="text-left flex-1">
+                                        <h3 className="font-bold text-lg text-slate-800">Bagian 1: Pilihan Ganda</h3>
+                                        <p className="text-slate-500 text-sm">第一部分：选择题 (20 Soal Acak)</p>
+                                    </div>
+                                    <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-blue-600" />
+                                </button>
+
+                                <button onClick={() => startPart(2, part2Source)} className="w-full flex items-center gap-4 bg-white hover:bg-emerald-50 p-5 rounded-2xl shadow-sm border border-slate-100 transition-all active:scale-95 group">
+                                    <div className="bg-emerald-100 p-3 rounded-xl group-hover:bg-emerald-600 transition-colors">
+                                        <Headphones className="w-6 h-6 text-emerald-600 group-hover:text-white" />
+                                    </div>
+                                    <div className="text-left flex-1">
+                                        <h3 className="font-bold text-lg text-slate-800">Bagian 2: Isi Titik (Suara)</h3>
+                                        <p className="text-slate-500 text-sm">第二部分：语音填空 (20 Soal Acak)</p>
+                                    </div>
+                                    <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-600" />
+                                </button>
+
+                                <button onClick={() => startPart(3, part3Source)} className="w-full flex items-center gap-4 bg-white hover:bg-purple-50 p-5 rounded-2xl shadow-sm border border-slate-100 transition-all active:scale-95 group">
+                                    <div className="bg-purple-100 p-3 rounded-xl group-hover:bg-purple-600 transition-colors">
+                                        <MessageCircle className="w-6 h-6 text-purple-600 group-hover:text-white" />
+                                    </div>
+                                    <div className="text-left flex-1">
+                                        <h3 className="font-bold text-lg text-slate-800">Bagian 3: Latihan Bicara</h3>
+                                        <p className="text-slate-500 text-sm">第三部分：口语练习 (20 Soal Acak)</p>
+                                    </div>
+                                    <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-purple-600" />
+                                </button>
+
+                                <button onClick={() => startPart(4, part4Source)} className="w-full flex items-center gap-4 bg-white hover:bg-orange-50 p-5 rounded-2xl shadow-sm border border-slate-100 transition-all active:scale-95 group">
+                                    <div className="bg-orange-100 p-3 rounded-xl group-hover:bg-orange-600 transition-colors">
+                                        <Languages className="w-6 h-6 text-orange-600 group-hover:text-white" />
+                                    </div>
+                                    <div className="text-left flex-1">
+                                        <h3 className="font-bold text-lg text-slate-800">Bagian 4: Terjemahkan</h3>
+                                        <p className="text-slate-500 text-sm">第四部分：口语翻译 (20 Soal Acak)</p>
+                                    </div>
+                                    <ArrowRight className="w-5 h-5 text-slate-300 group-hover:text-orange-600" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {view === 'part1' && <Part1 data={activeData} goBack={goBackToMenu} />}
+                    {view === 'part2' && <Part2 data={activeData} goBack={goBackToMenu} />}
+                    {view === 'part3' && <Part3 data={activeData} goBack={goBackToMenu} />}
+                    {view === 'part4' && <Part4 data={activeData} goBack={goBackToMenu} />}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
