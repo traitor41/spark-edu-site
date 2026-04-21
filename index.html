@@ -63,18 +63,18 @@
             
             <!-- Logo 与 品牌名 -->
             <div class="flex items-center gap-3">
-                <a href="#" class="hover:scale-105 transition-transform">
-                    <!-- 终极解决方案：使用本地相对路径读取 GitHub 里的图片 -->
-                    <img src="./logo.png.png" 
+                <a href="#" class="hover:scale-105 transition-transform flex items-center">
+                    <!-- 去掉了所有黑底和边框，放大了尺寸 (h-20) -->
+                    <img src="./logo.png" 
                          alt="Little Ant Logo" 
                          onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';"
-                         class="h-12 w-12 object-contain rounded-xl bg-black border-2 border-antPink shadow-md p-0.5">
-                    <!-- 在你传好 GitHub 之前，暂时显示这个小蚂蚁 -->
-                    <div id="fallback-logo" style="display: none;" class="h-12 w-12 bg-black rounded-xl items-center justify-center text-antPink text-2xl font-black border-2 border-antPink shadow-md">
+                         class="h-20 w-auto object-contain">
+                    <!-- 备用图标也去掉了边框并放大 -->
+                    <div id="fallback-logo" style="display: none;" class="h-20 w-20 items-center justify-center text-antPink text-5xl font-black">
                         🐜
                     </div>
                 </a>
-                <div class="font-black text-2xl tracking-wide hidden sm:block">
+                <div class="font-black text-2xl md:text-3xl tracking-wide hidden sm:block ml-2">
                     <span class="text-antPink" data-i18n="brand_part1">小蚂蚁</span>
                     <span class="text-antBlue" data-i18n="brand_part2">语言实验室</span>
                 </div>
